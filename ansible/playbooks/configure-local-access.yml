@@ -1,0 +1,42 @@
+---
+# Configure kubectl access on local machine
+- name: Configure local kubectl access
+  hosts: masters[0]
+  gather_facts: no
+  become: yes
+  tags: local-access
+
+  tasks:
+    - name: Fetch kubeconfig from master
+      fetch:
+        src: /etc/kubernetes/admin.conf
+        dest: /tmp/k8s-admin.conf
+        flat: yes
+
+- name: Setup local kubeconfig
+  hosts: localhost
+  gather_facts: no
+  connection: local
+
+  tasks:
+    - name: Create .kube directory on local machine
+      file:
+        path: "{{ lookup('env', 'HOME') }}/.kube"
+        state: directory
+        mode: '0755'
+
+    - name: Copy kubeconfig to local machine
+      copy:
+        src: /tmp/k8s-admin.conf
+        dest: "{{ lookup('env', 'HOME') }}/.kube/k8s-cluster-config"
+        mode: '0600'
+
+    - name: Update kubeconfig server address
+      replace:
+        path: "{{ lookup('env', 'HOME') }}/.kube/k8s-cluster-config"
+        regexp: 'server:.*'
+        replace: "server: https://{{ hostvars[groups['masters'][0]]['ansible_host'] }}:6443"
+
+    - name: Display kubectl config location
+      debug:
+        msg: "Kubeconfig saved to {{ lookup('env', 'HOME') }}/.kube/k8s-cluster-config. Use: export KUBECONFIG=~/.kube/k8s-cluster-config"

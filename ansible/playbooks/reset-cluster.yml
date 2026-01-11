@@ -1,0 +1,51 @@
+---
+# Reset Kubernetes cluster (WARNING: This will destroy the cluster!)
+- name: Reset Kubernetes cluster
+  hosts: k8s_cluster
+  gather_facts: no
+  become: yes
+
+  tasks:
+    - name: Confirm cluster reset
+      pause:
+        prompt: "Are you sure you want to reset the cluster? This will destroy all data! (Press Ctrl+C to cancel, Enter to continue)"
+
+    - name: Drain node
+      command: kubectl drain {{ inventory_hostname }} --ignore-daemonsets --delete-emptydir-data --force
+      delegate_to: "{{ groups['masters'][0] }}"
+      ignore_errors: yes
+      environment:
+        KUBECONFIG: /etc/kubernetes/admin.conf
+      when: inventory_hostname in groups['workers']
+
+    - name: Reset kubeadm
+      command: kubeadm reset -f
+
+    - name: Remove Kubernetes directories
+      file:
+        path: "{{ item }}"
+        state: absent
+      loop:
+        - /etc/kubernetes
+        - /var/lib/kubelet
+        - /var/lib/etcd
+        - /etc/cni/net.d
+        - /var/lib/cni
+        - /home/vagrant/.kube
+        - /root/.kube
+
+    - name: Remove CNI interfaces
+      shell: |
+        ip link delete cni0 2>/dev/null || true
+        ip link delete flannel.1 2>/dev/null || true
+        ip link delete tunl0 2>/dev/null || true
+      ignore_errors: yes
+
+    - name: Restart containerd
+      systemd:
+        name: containerd
+        state: restarted
+
+    - name: Display reset completion message
+      debug:
+        msg: "Node {{ inventory_hostname }} has been reset successfully"

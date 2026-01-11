@@ -1,0 +1,53 @@
+---
+# Add new worker node to existing cluster
+- name: Prepare new worker node
+  hosts: workers
+  gather_facts: yes
+  become: yes
+
+  tasks:
+    - name: Check if node is already configured
+      stat:
+        path: /etc/kubernetes/kubelet.conf
+      register: kubelet_conf
+
+    - name: Include node preparation tasks
+      include_tasks: prepare-nodes.yml
+      when: not kubelet_conf.stat.exists
+
+- name: Get join command from master
+  hosts: masters[0]
+  gather_facts: no
+  become: yes
+
+  tasks:
+    - name: Generate new join command
+      command: kubeadm token create --print-join-command
+      register: join_command
+      environment:
+        KUBECONFIG: /etc/kubernetes/admin.conf
+
+    - name: Save join command
+      set_fact:
+        k8s_join_command: "{{ join_command.stdout }}"
+
+- name: Join new worker to cluster
+  hosts: workers
+  gather_facts: no
+  become: yes
+
+  tasks:
+    - name: Check if already joined
+      stat:
+        path: /etc/kubernetes/kubelet.conf
+      register: kubelet_conf
+
+    - name: Execute join command
+      command: "{{ hostvars[groups['masters'][0]]['k8s_join_command'] }}"
+      when: not kubelet_conf.stat.exists
+
+    - name: Label new worker node
+      command: kubectl label node {{ inventory_hostname }} node-role.kubernetes.io/worker=worker --overwrite
+      delegate_to: "{{ groups['masters'][0] }}"
+      environment:
+        KUBECONFIG: /etc/kubernetes/admin.conf

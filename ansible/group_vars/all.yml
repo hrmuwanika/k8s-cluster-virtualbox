@@ -1,0 +1,47 @@
+---
+# Kubernetes Version
+kubernetes_version: "1.28.*"
+kubernetes_cni_version: "1.3.*"
+
+# Network Configuration
+pod_network_cidr: "10.244.0.0/16"
+service_cidr: "10.96.0.0/12"
+cluster_dns: "10.96.0.10"
+
+# CNI Plugin (calico or flannel)
+cni_plugin: "calico"
+
+# Calico Configuration
+calico_version: "v3.27.0"
+calico_ipv4pool_cidr: "{{ pod_network_cidr }}"
+
+# Containerd Configuration
+containerd_version: "1.7.*"
+containerd_config_default_runtime: "runc"
+
+# System Configuration
+swap_enabled: false
+firewall_enabled: false
+
+# Kubeadm Configuration
+kubeadm_init_extra_opts: ""
+kubeadm_join_extra_opts: ""
+
+# Additional Packages
+install_helm: true
+helm_version: "3.13.3"
+
+# Node Configuration
+node_labels: {}
+node_taints: []
+
+# Container Registry
+container_registry_mirrors: []
+
+# Timezone
+timezone: "UTC"
+
+# SSH Configuration
+ansible_user: vagrant
+ansible_become: true
+ansible_become_method: sudo

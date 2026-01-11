@@ -1,0 +1,19 @@
+---
+# Master node specific variables
+
+# Control plane endpoint (if using HA setup with load balancer)
+# control_plane_endpoint: "192.168.56.100:6443"
+
+# API server extra arguments
+api_server_extra_args: {}
+  # audit-log-path: /var/log/kubernetes/audit.log
+  # audit-log-maxage: "30"
+
+# Controller manager extra arguments
+controller_manager_extra_args: {}
+
+# Scheduler extra arguments
+scheduler_extra_args: {}
+
+# Enable pod scheduling on master nodes (not recommended for production)
+master_schedulable: false

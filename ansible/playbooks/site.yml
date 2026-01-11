@@ -1,0 +1,52 @@
+---
+# Main playbook to deploy Kubernetes cluster
+- name: Deploy Kubernetes Cluster
+  hosts: all
+  gather_facts: yes
+  become: yes
+
+  pre_tasks:
+    - name: Display cluster information
+      debug:
+        msg: "Deploying Kubernetes cluster with {{ groups['masters'] | length }} master(s) and {{ groups['workers'] | length }} worker(s)"
+      run_once: true
+
+- name: Prepare all nodes
+  import_playbook: prepare-nodes.yml
+
+- name: Initialize Kubernetes master
+  import_playbook: master-init.yml
+
+- name: Join worker nodes
+  import_playbook: workers-join.yml
+
+- name: Configure kubectl for local access
+  import_playbook: configure-local-access.yml
+
+- name: Post-deployment verification
+  hosts: masters
+  gather_facts: no
+  become: yes
+  tasks:
+    - name: Wait for all nodes to be ready
+      shell: kubectl get nodes | grep -v "NotReady" | grep "Ready" | wc -l
+      register: ready_nodes
+      until: ready_nodes.stdout | int == (groups['masters'] | length + groups['workers'] | length)
+      retries: 30
+      delay: 10
+
+    - name: Display cluster status
+      shell: kubectl get nodes -o wide
+      register: cluster_status
+
+    - name: Show cluster status
+      debug:
+        var: cluster_status.stdout_lines
+
+    - name: Display pod status
+      shell: kubectl get pods --all-namespaces
+      register: pod_status
+
+    - name: Show pod status
+      debug:
+        var: pod_status.stdout_lines

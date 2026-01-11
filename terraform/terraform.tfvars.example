@@ -1,0 +1,18 @@
+# Number of Nodes
+vm_count_master = 1
+vm_count_worker = 2
+
+# Master Node Resources
+master_cpus   = 2
+master_memory = 2048  # MB
+
+# Worker Node Resources
+worker_cpus   = 2
+worker_memory = 2048  # MB
+
+# Network Configuration
+network_prefix = "192.168.56"
+
+# VM Configuration
+base_image = "ubuntu/jammy64"
+disk_size  = 20  # GB
