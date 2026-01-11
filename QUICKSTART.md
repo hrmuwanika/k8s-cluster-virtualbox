@@ -4,7 +4,7 @@
 
 ```bash
 # 1. Clone and setup
-git clone <your-repo-url>
+git clone https://github.com/hrmuwanika/k8s-cluster-virtualbox
 cd k8s-cluster-virtualbox
 ./setup.sh
 
