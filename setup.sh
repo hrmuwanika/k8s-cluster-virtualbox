@@ -35,19 +35,19 @@ check_prerequisites() {
     
     local all_ok=true
     
+    # Check Vagrant
+    if command -v vagrant &> /dev/null; then
+        print_success "Vagrant is installed"
+    else
+        print_error "Vagrant is not installed"
+        all_ok=false
+    fi
+    
     # Check VirtualBox
     if command -v VBoxManage &> /dev/null; then
         print_success "VirtualBox is installed"
     else
         print_error "VirtualBox is not installed"
-        all_ok=false
-    fi
-    
-    # Check Terraform
-    if command -v terraform &> /dev/null; then
-        print_success "Terraform is installed"
-    else
-        print_error "Terraform is not installed"
         all_ok=false
     fi
     
@@ -64,36 +64,26 @@ check_prerequisites() {
         print_error "Please install missing prerequisites"
         echo ""
         echo "Installation commands:"
+        echo "  Vagrant:    https://www.vagrantup.com/downloads"
         echo "  VirtualBox: https://www.virtualbox.org/wiki/Downloads"
-        echo "  Terraform:  https://www.terraform.io/downloads"
         echo "  Ansible:    pip install ansible"
         exit 1
     fi
 }
 
-# Provision VMs with Terraform
+# Provision VMs with Vagrant
 provision_vms() {
-    print_header "Step 1: Provisioning VirtualBox VMs with Terraform"
+    print_header "Step 1: Provisioning VirtualBox VMs with Vagrant"
     
-    cd terraform
-    
-    print_info "Initializing Terraform..."
-    terraform init
-    
-    print_info "Planning infrastructure..."
-    terraform plan
-    
-    print_info "Applying Terraform configuration..."
-    terraform apply -auto-approve
+    print_info "Starting VMs with Vagrant..."
+    vagrant up
     
     print_success "VMs provisioned successfully"
     
     # Display VM information
     echo ""
     echo "VM Information:"
-    terraform output
-    
-    cd ..
+    vagrant status
 }
 
 # Setup Kubernetes cluster with Ansible
@@ -151,9 +141,7 @@ show_access_info() {
     echo "------------------------------"
     echo "1. SSH to master node:"
     echo "   ssh vagrant@$MASTER_IP"
-    echo ""
-    echo "2. Check cluster status:"
-    echo "   ssh vagrant@$MASTER_IP 'kubectl get nodes'"
+    MASTER_IP="192.168.56.10""   ssh vagrant@$MASTER_IP 'kubectl get nodes'"
     echo "   ssh vagrant@$MASTER_IP 'kubectl get pods -n node-api'"
     echo ""
     echo "3. Access the REST API:"
@@ -187,7 +175,7 @@ main() {
     provision_vms
     setup_kubernetes
     deploy_application
-    show_access_info
+    show_access_infovagrant destroy -f
     
     echo ""
     print_success "All done! Happy coding!"

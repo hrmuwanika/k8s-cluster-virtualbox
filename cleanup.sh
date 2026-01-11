@@ -20,10 +20,8 @@ echo "  Cleaning up Kubernetes Cluster"
 echo "==========================================="
 echo ""
 
-print_info "Destroying Terraform infrastructure..."
-cd terraform
-terraform destroy -auto-approve
-cd ..
+print_info "Destroying Vagrant VMs..."
+vagrant destroy -f
 
 print_success "Cleanup complete!"
 echo ""

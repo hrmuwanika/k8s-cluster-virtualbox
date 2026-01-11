@@ -1,0 +1,87 @@
+[H[2J[3J
+[0;34m============================================[0m
+[0;34m  Kubernetes Node.js REST API Cluster Setup[0m
+[0;34m============================================[0m
+
+
+[0;34m============================================[0m
+[0;34m  Checking Prerequisites[0m
+[0;34m============================================[0m
+
+[0;32m✓[0m Vagrant is installed
+[0;32m✓[0m VirtualBox is installed
+[0;32m✓[0m Ansible is installed
+
+[0;34m============================================[0m
+[0;34m  Step 1: Provisioning VirtualBox VMs with Vagrant[0m
+[0;34m============================================[0m
+
+[1;33m→[0m Starting VMs with Vagrant...
+Bringing machine 'k8s-master' up with 'libvirt' provider...
+Bringing machine 'k8s-worker-1' up with 'libvirt' provider...
+Bringing machine 'k8s-worker-2' up with 'libvirt' provider...
+==> k8s-worker-2: Box 'ubuntu/jammy64' could not be found. Attempting to find and install...
+    k8s-worker-2: Box Provider: libvirt
+    k8s-worker-2: Box Version: >= 0
+==> k8s-worker-2: Loading metadata for box 'ubuntu/jammy64'
+    k8s-worker-2: URL: https://vagrantcloud.com/ubuntu/jammy64
+==> k8s-worker-1: Box 'ubuntu/jammy64' could not be found. Attempting to find and install...
+==> k8s-worker-2: An error occurred. The error will be shown after all tasks complete.
+    k8s-worker-1: Box Provider: libvirt
+    k8s-worker-1: Box Version: >= 0
+==> k8s-worker-1: Loading metadata for box 'ubuntu/jammy64'
+    k8s-worker-1: URL: https://vagrantcloud.com/ubuntu/jammy64
+==> k8s-master: Box 'ubuntu/jammy64' could not be found. Attempting to find and install...
+==> k8s-worker-1: An error occurred. The error will be shown after all tasks complete.
+    k8s-master: Box Provider: libvirt
+    k8s-master: Box Version: >= 0
+==> k8s-master: Loading metadata for box 'ubuntu/jammy64'
+    k8s-master: URL: https://vagrantcloud.com/ubuntu/jammy64
+==> k8s-master: An error occurred. The error will be shown after all tasks complete.
+An error occurred while executing multiple actions in parallel.
+Any errors that occurred are shown below.
+
+An error occurred while executing the action on the 'k8s-master'
+machine. Please handle this error then try again:
+
+The box you're attempting to add doesn't support the provider
+you requested. Please find an alternate box or use an alternate
+provider. Double-check your requested provider to verify you didn't
+simply misspell it.
+
+If you're adding a box from HashiCorp's Vagrant Cloud, make sure the box is
+released.
+
+Name: ubuntu/jammy64
+Address: https://vagrantcloud.com/ubuntu/jammy64
+Requested provider: [:libvirt]
+
+An error occurred while executing the action on the 'k8s-worker-1'
+machine. Please handle this error then try again:
+
+The box you're attempting to add doesn't support the provider
+you requested. Please find an alternate box or use an alternate
+provider. Double-check your requested provider to verify you didn't
+simply misspell it.
+
+If you're adding a box from HashiCorp's Vagrant Cloud, make sure the box is
+released.
+
+Name: ubuntu/jammy64
+Address: https://vagrantcloud.com/ubuntu/jammy64
+Requested provider: [:libvirt]
+
+An error occurred while executing the action on the 'k8s-worker-2'
+machine. Please handle this error then try again:
+
+The box you're attempting to add doesn't support the provider
+you requested. Please find an alternate box or use an alternate
+provider. Double-check your requested provider to verify you didn't
+simply misspell it.
+
+If you're adding a box from HashiCorp's Vagrant Cloud, make sure the box is
+released.
+
+Name: ubuntu/jammy64
+Address: https://vagrantcloud.com/ubuntu/jammy64
+Requested provider: [:libvirt]

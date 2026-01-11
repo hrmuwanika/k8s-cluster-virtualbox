@@ -95,7 +95,7 @@ k8s-node-api-cluster/
 ### 1. Clone and Setup
 
 ```bash
-git clone https://github.com/hrmuwanika/k8s-cluster-virtualbox
+git clone <your-repo-url>
 cd k8s-node-api-cluster
 ```
 
