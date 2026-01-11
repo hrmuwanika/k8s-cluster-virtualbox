@@ -1,0 +1,65 @@
+---
+- name: Deploy Node.js REST API to Kubernetes
+  hosts: masters
+  become: yes
+  become_user: vagrant
+  tasks:
+    - name: Create app directory
+      file:
+        path: /home/vagrant/node-api
+        state: directory
+
+    - name: Copy deployment manifest
+      copy:
+        src: ../../app/deployment.yaml
+        dest: /home/vagrant/node-api/deployment.yaml
+
+    - name: Copy Dockerfile
+      copy:
+        src: ../../app/Dockerfile
+        dest: /home/vagrant/node-api/Dockerfile
+
+    - name: Copy application files
+      copy:
+        src: "{{ item }}"
+        dest: /home/vagrant/node-api/
+      loop:
+        - ../../app/index.js
+        - ../../app/package.json
+
+    - name: Check if Docker is installed
+      command: which docker
+      register: docker_check
+      ignore_errors: yes
+
+    - name: Install Docker if not present
+      become: yes
+      become_user: root
+      block:
+        - name: Install Docker
+          apt:
+            name: docker.io
+            state: present
+
+        - name: Add vagrant to docker group
+          user:
+            name: vagrant
+            groups: docker
+            append: yes
+
+        - name: Start Docker service
+          systemd:
+            name: docker
+            state: started
+            enabled: yes
+      when: docker_check.rc != 0
+
+    - name: Build Docker image
+      command: docker build -t node-rest-api:latest /home/vagrant/node-api
+      become: yes
+
+    - name: Deploy to Kubernetes
+      command: kubectl apply -f /home/vagrant/node-api/deployment.yaml
+
+    - name: Wait for deployment to be ready
+      command: kubectl wait --for=condition=ready pod -l app=node-api -n node-api --timeout=120s

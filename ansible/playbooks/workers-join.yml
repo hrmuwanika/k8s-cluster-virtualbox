@@ -1,0 +1,13 @@
+---
+- name: Join worker nodes to cluster
+  hosts: workers
+  become: yes
+  tasks:
+    - name: Copy join command from master
+      set_fact:
+        k8s_join_command: "{{ lookup('file', '/tmp/k8s-join-command.sh') }}"
+
+    - name: Join the cluster
+      command: "{{ k8s_join_command }}"
+      args:
+        creates: /etc/kubernetes/kubelet.conf
