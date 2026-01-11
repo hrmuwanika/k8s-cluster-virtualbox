@@ -6,6 +6,7 @@
 # 1. Clone and setup
 git clone https://github.com/hrmuwanika/k8s-cluster-virtualbox
 cd k8s-cluster-virtualbox
+chmod +x setup.sh
 ./setup.sh
 
 # 2. Or manual setup
